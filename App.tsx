@@ -3,7 +3,7 @@ import BrandInputForm from './components/BrandInputForm';
 import DashboardDisplay from './components/DashboardDisplay';
 import ErrorDisplay from './components/ErrorDisplay';
 import LoadingIndicator from './components/LoadingIndicator';
-import { ChartBarIcon, PositionMapIcon } from './components/icons';
+import { ChartBarIcon, MarketLearnIcon, PositionMapIcon } from './components/icons';
 import { fetchBrandMapData } from './services/geminiService';
 import type { MapData, ScopeOption } from './types';
 
@@ -42,20 +42,25 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-bg text-ink">
       <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-4 py-4 sm:px-6 sm:py-6 md:px-8 md:py-8">
+        <header className="topbar mb-6">
+          <div className="shell topbar-inner px-0">
+            <a className="brand" href="https://marketlearn.online">
+              <span className="brand-icon" aria-hidden="true">
+                <MarketLearnIcon className="h-6 w-6" />
+              </span>
+              <span className="brand-copy">
+                <span className="brand-mark">MarketLearn</span>
+              </span>
+            </a>
+          </div>
+        </header>
+
         <header className="hero mb-10 rounded-[8px] p-6 sm:p-8 lg:p-10">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-3xl">
               <div className="eyebrow mb-4 inline-flex items-center gap-2 px-4 py-2 text-[0.72rem] font-semibold tracking-[0.18em] text-accent-strong">
                 <ChartBarIcon className="h-4 w-4" />
                 MarketLearn Tool
-              </div>
-              <div>
-                <a
-                  href="https://marketlearn.online"
-                  className="tool-link mb-6 inline-flex text-[0.8rem] text-accent-strong"
-                >
-                  Back to MarketLearn
-                </a>
               </div>
               <h1 className="font-display text-5xl font-semibold tracking-[0.01em] text-ink sm:text-6xl md:text-[4.2rem]">
                 <span className="inline-flex items-center gap-3 sm:gap-4">

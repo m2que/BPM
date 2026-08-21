@@ -26,6 +26,14 @@ export const ChartBarIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => 
   </svg>
 );
 
+export const MarketLearnIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg {...iconBaseProps} strokeWidth="2" {...props}>
+    <line x1="12" y1="20" x2="12" y2="10"></line>
+    <line x1="18" y1="20" x2="18" y2="4"></line>
+    <line x1="6" y1="20" x2="6" y2="16"></line>
+  </svg>
+);
+
 export const AlertTriangleIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg {...iconBaseProps} strokeWidth="1.8" {...props}>
     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
