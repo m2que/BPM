@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Brand Position Mapper</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/brand.css" />
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-SKN1Y8ZPF1"></script>
@@ -19,18 +23,24 @@
         theme: {
           extend: {
             fontFamily: {
-              display: ['Georgia', 'Times New Roman', 'serif'],
-              body: ['ui-sans-serif', 'system-ui', 'sans-serif']
+              display: ['Cormorant Garamond', 'Georgia', 'serif'],
+              body: ['Source Sans 3', 'Arial', 'sans-serif']
             },
             colors: {
-              parchment: '#f7f1e7',
-              ink: '#1f2937',
-              moss: '#1f5f5b',
-              bronze: '#c67d32',
-              stone: '#6b7280'
+              bg: '#f5efe6',
+              surface: '#fcf8f2',
+              'surface-strong': '#fbf6ee',
+              paper: '#fffaf2',
+              ink: '#1d2430',
+              muted: '#5f6b7a',
+              line: '#d6d2cb',
+              accent: '#c39a5b',
+              'accent-strong': '#1f4b8f',
+              warm: '#e0bb7a',
+              'navy-deep': '#183159'
             },
             boxShadow: {
-              card: '0 24px 80px rgba(61, 41, 20, 0.12)'
+              card: 'none'
             },
             animation: {
               'fade-in': 'fadeIn 0.45s ease-out both'
@@ -47,7 +57,7 @@
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body class="bg-[linear-gradient(180deg,#fffaf2_0%,#f7f1e7_48%,#f3ecdf_100%)] font-body text-ink">
+  <body class="font-body text-ink bg-bg">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

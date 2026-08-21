@@ -40,38 +40,42 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#fffaf2_0%,#f7f1e7_48%,#f3ecdf_100%)] text-slate-800 flex flex-col items-center p-4 sm:p-6 md:p-8">
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(198,125,50,0.16),transparent_30%),radial-gradient(circle_at_top_right,rgba(31,95,91,0.16),transparent_26%)]"></div>
-      <div className="w-full max-w-7xl mx-auto">
-        <header className="mb-10 rounded-[28px] border border-[rgba(113,86,56,0.14)] bg-[rgba(255,252,247,0.9)] px-6 py-10 shadow-[0_24px_80px_rgba(61,41,20,0.12)] sm:px-10">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+    <div className="min-h-screen bg-bg text-ink">
+      <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-4 py-4 sm:px-6 sm:py-6 md:px-8 md:py-8">
+        <header className="hero mb-10 rounded-[8px] p-6 sm:p-8 lg:p-10">
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-3xl">
-              <div className="mb-4 inline-flex items-center gap-3 rounded-full bg-[rgba(15,118,110,0.08)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-teal-800">
+              <div className="eyebrow mb-4 inline-flex items-center gap-2 px-4 py-2 text-[0.72rem] font-semibold tracking-[0.18em] text-accent-strong">
                 <ChartBarIcon className="h-4 w-4" />
-                MarketLearn Featured Tool
+                MarketLearn Tool
               </div>
               <div>
                 <a
                   href="https://marketlearn.online"
-                  className="inline-flex items-center rounded-full border border-[rgba(15,118,110,0.18)] bg-[rgba(255,252,247,0.9)] px-4 py-2 text-sm font-medium text-teal-800 shadow-[0_10px_24px_rgba(61,41,20,0.06)] transition hover:-translate-y-px hover:border-[rgba(15,118,110,0.3)] hover:text-teal-900"
+                  className="tool-link mb-6 inline-flex text-[0.8rem] text-accent-strong"
                 >
                   Back to MarketLearn
                 </a>
               </div>
-              <h1 className="font-serif text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl md:text-6xl">
-                Brand Position Mapper
+              <h1 className="font-display text-5xl font-semibold tracking-[0.01em] text-ink sm:text-6xl md:text-[4.2rem]">
+                <span className="inline-flex items-center gap-3 sm:gap-4">
+                  <span className="tool-card-icon h-[52px] w-[52px] bg-surface-strong text-accent-strong sm:h-[60px] sm:w-[60px]">
+                    <PositionMapIcon className="h-7 w-7 sm:h-8 sm:w-8" />
+                  </span>
+                  <span>Brand Position Mapper</span>
+                </span>
               </h1>
-              <p className="mt-5 max-w-3xl text-base leading-8 text-slate-600 sm:text-lg">
+              <p className="lead mt-5 max-w-3xl text-base text-muted sm:text-lg">
                 Map how a brand is perceived against competitors, then support that positioning read with grounded sources. The linked industry reports, business news, and academic articles may be used to support reports and business plans.
               </p>
             </div>
-            <div className="max-w-sm rounded-[22px] border border-[rgba(15,118,110,0.12)] bg-[linear-gradient(180deg,rgba(255,252,247,0.96),rgba(250,244,235,0.96))] p-5 shadow-[0_16px_40px_rgba(61,41,20,0.08)]">
-              <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[rgba(15,118,110,0.08)] text-teal-800">
+            <div className="section-card w-full max-w-sm rounded-[8px] p-5">
+              <div className="tool-card-icon mb-4 text-accent-strong">
                 <PositionMapIcon className="h-6 w-6" />
               </div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-800">How to use it</p>
-              <p className="mt-3 font-serif text-2xl font-semibold text-slate-900">Global or regional brand mapping</p>
-              <p className="mt-3 text-sm leading-7 text-slate-600">
+              <p className="eyebrow inline-flex px-3 py-1 text-[0.7rem] font-semibold tracking-[0.16em] text-accent-strong">How to use it</p>
+              <p className="mt-4 font-display text-[1.8rem] font-semibold text-ink">Global or regional brand mapping</p>
+              <p className="section-copy mt-3 text-sm text-muted">
                 Start with one brand, compare its perceived position against competitors, then use the results to inform strategy.
               </p>
             </div>
@@ -88,10 +92,12 @@ const App: React.FC = () => {
             <DashboardDisplay data={mapData} />
           ) : (
             !isLoading && !error && (
-              <div className="mt-12 rounded-[24px] border border-[rgba(113,86,56,0.14)] bg-[rgba(255,252,247,0.9)] p-8 text-center shadow-card">
-                <ChartBarIcon className="mx-auto mb-4 h-12 w-12 text-bronze" />
+              <div className="section-card mt-12 rounded-[8px] p-8 text-center">
+                <div className="tool-card-icon mx-auto mb-4 h-[54px] w-[54px] text-accent-strong">
+                  <ChartBarIcon className="h-7 w-7" />
+                </div>
                 <h2 className="font-display text-3xl font-semibold text-ink">Ready to Map</h2>
-                <p className="mt-3 text-stone">
+                <p className="section-copy mt-3 text-muted">
                   Enter a brand above to generate a competitor-based customer perception map with global or regional scope and supporting references.
                 </p>
               </div>
@@ -99,17 +105,17 @@ const App: React.FC = () => {
           )}
         </main>
 
-        <footer className="mt-auto pt-8 text-center text-sm text-stone">
+        <footer className="mt-auto pt-8 text-center text-sm text-muted">
           <p>
             © 2026{' '}
-            <a href="https://marketlearn.online" className="text-moss underline decoration-[rgba(31,95,91,0.4)] underline-offset-4 hover:text-bronze">
+            <a href="https://marketlearn.online" className="text-accent-strong underline decoration-accent underline-offset-4 hover:text-accent">
               MarketLearn
             </a>
             . AI-assisted content — verify before implementation.
           </p>
           <p className="mt-2">
             Contact:{' '}
-            <a href="mailto:marketlearn.online@gmail.com" className="text-moss underline decoration-[rgba(31,95,91,0.4)] underline-offset-4 hover:text-bronze">
+            <a href="mailto:marketlearn.online@gmail.com" className="text-accent-strong underline decoration-accent underline-offset-4 hover:text-accent">
               marketlearn.online@gmail.com
             </a>
           </p>

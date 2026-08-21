@@ -31,19 +31,19 @@ const BrandInputForm: React.FC<BrandInputFormProps> = ({ onSubmit, isLoading }) 
 
   return (
     <form onSubmit={handleSubmit} className="mb-8 mx-auto max-w-4xl">
-      <div className="space-y-4 rounded-[28px] border border-[rgba(245,238,220,0.45)] bg-[linear-gradient(145deg,rgba(4,47,46,0.96),rgba(8,83,75,0.94)_52%,rgba(10,57,54,0.97))] p-4 shadow-[0_30px_90px_rgba(3,32,30,0.42)] transition-all duration-300 focus-within:ring-2 focus-within:ring-[rgba(254,240,138,0.45)] sm:p-5">
-        <div className="mb-1 flex items-center gap-3 text-[#f6e7c8]">
-          <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[rgba(255,248,225,0.22)] bg-[rgba(255,250,240,0.1)] text-current shadow-[inset_0_1px_0_rgba(255,248,225,0.08)]">
+      <div className="section-card space-y-5 rounded-[8px] p-4 transition-all duration-300 focus-within:ring-2 focus-within:ring-[rgba(31,75,143,0.16)] sm:p-5">
+        <div className="mb-1 flex items-center gap-3 text-accent-strong">
+          <div className="tool-card-icon h-11 w-11 border-line bg-surface-strong text-current">
             <PositionMapIcon className="h-5 w-5" />
           </div>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[rgba(246,231,200,0.8)]">Brand Position Mapper Input</p>
-            <p className="text-sm text-[rgba(248,239,218,0.88)]">Enter a brand, choose a scope, and generate the analysis.</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent-strong">Brand Position Mapper Input</p>
+            <p className="text-sm text-muted">Enter a brand, choose a scope, and generate the analysis.</p>
           </div>
         </div>
         <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
           <label className="flex flex-col gap-2">
-            <span className="text-lg font-extrabold uppercase tracking-[0.12em] text-[#f6e7c8] sm:text-[1.3rem]">Brand Name</span>
+            <span className="text-sm font-semibold uppercase tracking-[0.14em] text-muted">Brand Name</span>
             <input
               type="text"
               value={brandName}
@@ -60,7 +60,7 @@ const BrandInputForm: React.FC<BrandInputFormProps> = ({ onSubmit, isLoading }) 
               }}
               maxLength={200}
               placeholder="Enter a brand name (e.g., Tesla, Nike, Samsung)"
-              className="w-full rounded-2xl border border-[rgba(255,248,225,0.36)] bg-[rgba(255,250,240,0.14)] px-4 py-3 text-lg text-[#fff8ea] placeholder:text-[rgba(246,231,200,0.72)] shadow-[inset_0_1px_0_rgba(255,248,225,0.12),0_18px_40px_rgba(2,24,23,0.28)] backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-[rgba(254,240,138,0.45)]"
+              className="w-full rounded-[8px] border border-line bg-paper px-4 py-3 text-lg text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-[rgba(31,75,143,0.18)]"
               disabled={isLoading}
             />
           </label>
@@ -69,7 +69,7 @@ const BrandInputForm: React.FC<BrandInputFormProps> = ({ onSubmit, isLoading }) 
             type="button"
             onClick={handleAnalyzeClick}
             disabled={isLoading}
-            className="flex items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#f2c66d,#d9a441)] px-6 py-3 font-bold text-[#1f2937] shadow-[0_18px_34px_rgba(89,64,18,0.34)] transition-all duration-300 hover:-translate-y-px hover:bg-[linear-gradient(135deg,#f5d27f,#e0af4e)] focus:outline-none focus:ring-2 focus:ring-[rgba(254,240,138,0.55)] focus:ring-offset-2 focus:ring-offset-[#0a3c39] disabled:cursor-not-allowed disabled:opacity-50"
+            className="button button-primary rounded-full px-6 py-3 font-semibold uppercase tracking-[0.08em] transition-all duration-300 hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
           >
             <SearchIcon className="mr-2 h-5 w-5" />
             {isLoading ? 'Analyzing...' : 'Analyze'}
@@ -77,26 +77,26 @@ const BrandInputForm: React.FC<BrandInputFormProps> = ({ onSubmit, isLoading }) 
         </div>
 
         <div className="grid gap-3 md:grid-cols-[220px_minmax(0,1fr)] md:items-stretch">
-          <label className="flex h-full flex-col gap-2 rounded-2xl border border-[rgba(255,248,225,0.28)] bg-[rgba(255,250,240,0.1)] px-4 py-3 text-[#f8efda] shadow-[inset_0_1px_0_rgba(255,248,225,0.08)] backdrop-blur-sm">
-            <span className="text-sm font-semibold uppercase tracking-[0.14em] text-[rgba(246,231,200,0.84)]">Scope</span>
+          <label className="flex h-full flex-col gap-2 rounded-[8px] border border-line bg-surface-strong px-4 py-3 text-ink">
+            <span className="text-sm font-semibold uppercase tracking-[0.14em] text-muted">Scope</span>
             <select
               value={scope}
               onChange={(event) => setScope(event.target.value as ScopeOption)}
               disabled={isLoading}
-              className="bg-transparent text-sm text-[#fff8ea] focus:outline-none"
+              className="bg-transparent text-sm text-ink focus:outline-none"
             >
               <option value="Global">Global</option>
               <option value="Regional">Regional</option>
             </select>
             {!errorMessage && (
-              <span className="mt-auto text-sm leading-6 text-[rgba(248,239,218,0.86)]">
+              <span className="mt-auto text-sm leading-6 text-muted">
                 {scope === 'Global' ? 'Use a broad market view across major competitors.' : 'Focus the map on a specific country or regional market.'}
               </span>
             )}
           </label>
 
-          <label className="flex h-full flex-col gap-2 rounded-2xl border border-[rgba(255,248,225,0.24)] bg-[rgba(255,250,240,0.08)] px-4 py-3 text-[#f8efda] shadow-[inset_0_1px_0_rgba(255,248,225,0.06)] backdrop-blur-sm">
-            <span className="text-sm font-semibold uppercase tracking-[0.14em] text-[rgba(246,231,200,0.84)]">Region or Country</span>
+          <label className="flex h-full flex-col gap-2 rounded-[8px] border border-line bg-surface-strong px-4 py-3 text-ink">
+            <span className="text-sm font-semibold uppercase tracking-[0.14em] text-muted">Region or Country</span>
             <input
               type="text"
               value={regionalQuery}
@@ -107,15 +107,15 @@ const BrandInputForm: React.FC<BrandInputFormProps> = ({ onSubmit, isLoading }) 
               }}
               onChange={(event) => setRegionalQuery(event.target.value)}
               placeholder={scope === 'Regional' ? 'e.g., USA, GCC, Western Europe' : 'Used only for regional scope'}
-              className="w-full rounded-2xl border border-[rgba(255,248,225,0.22)] bg-[rgba(255,250,240,0.08)] px-4 py-3 text-base text-[#fff8ea] placeholder:text-[rgba(246,231,200,0.62)] focus:outline-none focus:ring-2 focus:ring-[rgba(254,240,138,0.35)] disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full rounded-[8px] border border-line bg-paper px-4 py-3 text-base text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-[rgba(31,75,143,0.18)] disabled:cursor-not-allowed disabled:opacity-60"
               disabled={isLoading || scope !== 'Regional'}
             />
-            <p className="mt-auto text-sm leading-6 text-[rgba(248,239,218,0.82)]">
+            <p className="mt-auto text-sm leading-6 text-muted">
               Choose <strong>Global</strong> for an overall market view, or switch to <strong>Regional</strong> to focus the perception map on a specific geography.
             </p>
           </label>
         </div>
-        {errorMessage ? <p className="px-4 text-sm font-medium text-[#ffe2b8]">{errorMessage}</p> : null}
+        {errorMessage ? <p className="px-1 text-sm font-medium text-[#9d4c16]">{errorMessage}</p> : null}
       </div>
     </form>
   );
