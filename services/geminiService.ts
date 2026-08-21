@@ -1,4 +1,4 @@
-import type { MapData } from '../types';
+import type { MapData, MarketOverview } from '../types';
 
 export const fetchBrandMapData = async (brandName: string, scope: string): Promise<MapData> => {
   const response = await fetch('/api/brand-map', {
@@ -12,6 +12,22 @@ export const fetchBrandMapData = async (brandName: string, scope: string): Promi
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     throw new Error(typeof errorData.error === 'string' ? errorData.error : 'Failed to generate brand map data.');
+  }
+
+  return response.json();
+};
+
+export const fetchMarketOverview = async (brandName: string): Promise<MarketOverview> => {
+  const response = await fetch('/api/market-overview', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ brandName })
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to generate market overview.');
   }
 
   return response.json();

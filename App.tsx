@@ -1,16 +1,46 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import BrandInputForm from './components/BrandInputForm';
+import BrandIcon from './components/BrandIcon';
 import DashboardDisplay from './components/DashboardDisplay';
 import ErrorDisplay from './components/ErrorDisplay';
 import LoadingIndicator from './components/LoadingIndicator';
-import { ChartBarIcon, MarketLearnIcon, PositionMapIcon } from './components/icons';
-import { fetchBrandMapData } from './services/geminiService';
+import { fetchBrandMapData, fetchMarketOverview } from './services/geminiService';
 import type { MapData, ScopeOption } from './types';
 
 const App: React.FC = () => {
   const [mapData, setMapData] = useState<MapData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+
+  useEffect(() => {
+    if (!isLoading) {
+      setElapsedSeconds(0);
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      setElapsedSeconds((current) => current + 1);
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [isLoading]);
+
+  const handleRunNewAnalysis = useCallback(() => {
+    setMapData(null);
+    setError(null);
+    setIsLoading(false);
+
+    window.requestAnimationFrame(() => {
+      const inputCard = document.getElementById('analyze');
+      inputCard?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      window.setTimeout(() => {
+        const brandInput = document.getElementById('brand-name-input') as HTMLTextAreaElement | null;
+        brandInput?.focus();
+      }, 250);
+    });
+  }, []);
 
   const handleSubmit = useCallback(async (brandName: string, scope: ScopeOption, regionalQuery: string) => {
     if (!brandName.trim()) {
@@ -29,8 +59,15 @@ const App: React.FC = () => {
 
     try {
       const analysisScope = scope === 'Regional' ? regionalQuery.trim() : 'Global';
-      const data = await fetchBrandMapData(brandName.trim(), analysisScope);
-      setMapData(data);
+      const normalizedBrandName = brandName.trim();
+      const [data, marketOverview] = await Promise.all([
+        fetchBrandMapData(normalizedBrandName, analysisScope),
+        fetchMarketOverview(normalizedBrandName).catch(() => null)
+      ]);
+      setMapData({
+        ...data,
+        marketOverview: marketOverview || data.marketOverview
+      });
     } catch (requestError) {
       console.error(requestError);
       setError(requestError instanceof Error ? requestError.message : 'An unknown error occurred.');
@@ -40,13 +77,14 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-bg text-ink">
-      <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-4 py-4 sm:px-6 sm:py-6 md:px-8 md:py-8">
+    <div className="brand-app">
+      <div dangerouslySetInnerHTML={{ __html: `<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true"><symbol id="icon-marketlearn" viewBox="0 0 24 24"><path d="M12 20V10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M18 20V4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M6 20v-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></symbol><symbol id="icon-cbbe" viewBox="0 0 24 24"><path d="M2.5 16.88a1 1 0 0 1-.32-1.43l9-13.02a1 1 0 0 1 1.64 0l9 13.01a1 1 0 0 1-.32 1.44l-8.51 4.86a2 2 0 0 1-1.98 0Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path><path d="M12 2v20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></symbol><symbol id="icon-bpm" viewBox="0 0 24 24"><path d="M12 23V1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path><path d="M1 12h22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></symbol><symbol id="icon-bea" viewBox="0 0 24 24"><path d="M12 0.6c1.18 2.92 2.92 5.05 4.7 7.22 1.82 2.22 3.68 4.5 3.68 7.34A8 8 0 0 1 12 23a8 8 0 0 1-8-7.84c0-2.84 1.86-5.12 3.68-7.34C9.08 5.65 10.82 3.52 12 0.6Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></symbol></svg>` }} />
+      <div className="brand-page">
         <header className="topbar mb-6">
-          <div className="shell topbar-inner px-0">
+          <div className="shell topbar-inner">
             <a className="brand" href="https://marketlearn.online">
               <span className="brand-icon" aria-hidden="true">
-                <MarketLearnIcon className="h-6 w-6" />
+                <BrandIcon name="icon-marketlearn" />
               </span>
               <span className="brand-copy">
                 <span className="brand-mark">MarketLearn</span>
@@ -55,74 +93,59 @@ const App: React.FC = () => {
           </div>
         </header>
 
-        <header className="hero mb-10 rounded-[8px] p-6 sm:p-8 lg:p-10">
-          <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
-            <div className="max-w-3xl">
-              <div className="eyebrow mb-4 inline-flex items-center gap-2 px-4 py-2 text-[0.72rem] font-semibold tracking-[0.18em] text-accent-strong">
-                <ChartBarIcon className="h-4 w-4" />
-                MarketLearn Tool
+        <section className="brand-hero">
+          <div className="brand-hero-copy">
+            <h1 className="brand-title">Brand Position Mapper</h1>
+            <p className="brand-copy">
+                Map how a brand is perceived against competitors to examine its positioning strategy. Use linked industry reports, business news, and academic articles as evidence in reports and business plans.
+            </p>
+          </div>
+          <div className="brand-panel-stack">
+            <div className="brand-panel brand-panel-tight">
+              <div className="brand-icon-circle" aria-hidden="true">
+                <BrandIcon name="icon-bpm" style={{ width: '32px', height: '32px', display: 'block' }} />
               </div>
-              <h1 className="font-display text-5xl font-semibold tracking-[0.01em] text-ink sm:text-6xl md:text-[4.2rem]">
-                <span className="inline-flex items-center gap-3 sm:gap-4">
-                  <span className="tool-card-icon h-[52px] w-[52px] bg-surface-strong text-accent-strong sm:h-[60px] sm:w-[60px]">
-                    <PositionMapIcon className="h-7 w-7 sm:h-8 sm:w-8" />
-                  </span>
-                  <span>Brand Position Mapper</span>
-                </span>
-              </h1>
-              <p className="lead mt-5 max-w-3xl text-base text-muted sm:text-lg">
-                Map how a brand is perceived against competitors, then support that positioning read with grounded sources. The linked industry reports, business news, and academic articles may be used to support reports and business plans.
+              <p className="brand-microcopy" style={{ color: 'var(--muted)' }}>How to use it</p>
+              <h2 className="brand-heading">Enter a brand to map its position in global or regional markets.</h2>
+              <p className="brand-copy-sm">
+                <strong>Positioning read:</strong> use points of parity and points of difference to interpret why the brand overlaps with or separates from rivals.
               </p>
-            </div>
-            <div className="section-card w-full max-w-sm rounded-[8px] p-5">
-              <div className="tool-card-icon mb-4 text-accent-strong">
-                <PositionMapIcon className="h-6 w-6" />
-              </div>
-              <p className="eyebrow inline-flex px-3 py-1 text-[0.7rem] font-semibold tracking-[0.16em] text-accent-strong">How to use it</p>
-              <p className="mt-4 font-display text-[1.8rem] font-semibold text-ink">Global or regional brand mapping</p>
-              <p className="section-copy mt-3 text-sm text-muted">
-                Start with one brand, compare its perceived position against competitors, then use the results to inform strategy.
+              <p className="brand-copy-sm">
+                <strong>Market context:</strong> adds insight from market size, industry trends, and competitive whitespace.
               </p>
             </div>
           </div>
-        </header>
+        </section>
 
-        <main>
+        <main className="brand-shell-stack" id="analyze">
           <BrandInputForm onSubmit={handleSubmit} isLoading={isLoading} />
 
-          {isLoading && <LoadingIndicator />}
+          {isLoading && <LoadingIndicator elapsedSeconds={elapsedSeconds} />}
           {error && <ErrorDisplay message={error} />}
 
           {mapData ? (
-            <DashboardDisplay data={mapData} />
+            <DashboardDisplay data={mapData} onRunNewAnalysis={handleRunNewAnalysis} />
           ) : (
             !isLoading && !error && (
-              <div className="section-card mt-12 rounded-[8px] p-8 text-center">
-                <div className="tool-card-icon mx-auto mb-4 h-[54px] w-[54px] text-accent-strong">
-                  <ChartBarIcon className="h-7 w-7" />
+              <div className="brand-card brand-state">
+                <div className="brand-icon-circle" aria-hidden="true" style={{ margin: '0 auto 16px' }}>
+                  <BrandIcon name="icon-marketlearn" className="brand-inline-icon h-7 w-7" />
                 </div>
-                <h2 className="font-display text-3xl font-semibold text-ink">Ready to Map</h2>
-                <p className="section-copy mt-3 text-muted">
-                  Enter a brand above to generate a competitor-based customer perception map with global or regional scope and supporting references.
+                <h2 className="brand-heading brand-heading-lg">Ready to Map</h2>
+                <p className="brand-copy" style={{ marginTop: '12px' }}>
+                  Enter a brand above to generate a competitor-based customer perception map with global or regional scope, grounded references, and market context.
                 </p>
               </div>
             )
           )}
         </main>
 
-        <footer className="mt-auto pt-8 text-center text-sm text-muted">
-          <p>
-            © 2026{' '}
-            <a href="https://marketlearn.online" className="text-accent-strong underline decoration-accent underline-offset-4 hover:text-accent">
-              MarketLearn
-            </a>
-            . AI-assisted content — verify before implementation.
+        <footer className="brand-footer">
+          <p className="brand-footer-copy">
+            © 2026 <a href="https://marketlearn.online" className="brand-inline-link">MarketLearn</a>. AI-assisted content — verify before implementation.
           </p>
-          <p className="mt-2">
-            Contact:{' '}
-            <a href="mailto:marketlearn.online@gmail.com" className="text-accent-strong underline decoration-accent underline-offset-4 hover:text-accent">
-              marketlearn.online@gmail.com
-            </a>
+          <p className="brand-footer-copy">
+            Contact: <a href="mailto:marketlearn.online@gmail.com" className="brand-inline-link">marketlearn.online@gmail.com</a>
           </p>
         </footer>
       </div>

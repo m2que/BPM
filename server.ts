@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import http from 'node:http';
 import path from 'node:path';
 import brandMapHandler from './api/brand-map';
+import marketOverviewHandler from './api/market-overview';
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
@@ -40,6 +41,30 @@ app.post('/api/brand-map', async (req, res) => {
   } catch (error) {
     console.error('Unhandled local API server error:', error);
     res.status(500).json({ error: 'Local API server error' });
+  }
+});
+
+app.post('/api/market-overview', async (req, res) => {
+  try {
+    await marketOverviewHandler(
+      {
+        method: req.method,
+        body: req.body
+      },
+      {
+        setHeader: (name: string, value: string) => {
+          res.setHeader(name, value);
+        },
+        status: (code: number) => ({
+          json: (body: unknown) => {
+            res.status(code).json(body);
+          }
+        })
+      }
+    );
+  } catch (error) {
+    console.error('Unhandled local market overview API server error:', error);
+    res.status(500).json({ error: 'Local market overview API server error' });
   }
 });
 

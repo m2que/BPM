@@ -35,10 +35,29 @@ const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<
   );
 };
 
+const renderTargetShape = (isCompact: boolean) => (props: any) => {
+  const { cx, cy, fill, stroke } = props;
+
+  return (
+    <g>
+      <circle cx={cx} cy={cy} r={isCompact ? 18 : 24} fill={fill} stroke={stroke} strokeWidth={2.5} />
+      <circle cx={cx} cy={cy} r={isCompact ? 8 : 10} fill="#fffaf2" opacity={0.9} />
+    </g>
+  );
+};
+
+const renderCompetitorShape = (isCompact: boolean) => (props: any) => {
+  const { cx, cy, fill, stroke } = props;
+
+  return <circle cx={cx} cy={cy} r={isCompact ? 14 : 18} fill={fill} stroke={stroke} strokeWidth={2} />;
+};
+
 const PerceptualMap: React.FC<PerceptualMapProps> = ({ data, xAxisLabel, yAxisLabel }) => {
   const isCompact = typeof window !== 'undefined' && window.innerWidth < 640;
   const chartXAxisLabel = `Perception Dimension: ${xAxisLabel}`;
   const chartYAxisLabel = `Perception Dimension: ${yAxisLabel}`;
+  const targetBrands = data.filter((brand) => brand.isTarget);
+  const competitorBrands = data.filter((brand) => !brand.isTarget);
 
   return (
     <div className="h-[22rem] rounded-[8px] border border-line bg-paper p-3 sm:h-96 sm:p-4 md:h-[520px]">
@@ -54,13 +73,21 @@ const PerceptualMap: React.FC<PerceptualMapProps> = ({ data, xAxisLabel, yAxisLa
           <Tooltip content={<CustomTooltip />} cursor={{ strokeDasharray: '3 3', stroke: '#c39a5b' }} />
           <ReferenceLine x={0} stroke="#c39a5b" strokeDasharray="4 4" />
           <ReferenceLine y={0} stroke="#c39a5b" strokeDasharray="4 4" />
-          <Scatter data={data}>
-            {data.map((brand, index) => (
+          <Scatter name="Target Brand" data={targetBrands} shape={renderTargetShape(isCompact)}>
+            {targetBrands.map((brand, index) => (
               <Cell
                 key={`${brand.name}-${index}`}
-                fill={brand.isTarget ? '#c39a5b' : '#1f4b8f'}
-                stroke={brand.isTarget ? '#1d2430' : '#fbf6ee'}
-                strokeWidth={brand.isTarget ? 2.5 : 1.25}
+                fill="#c39a5b"
+                stroke="#1d2430"
+              />
+            ))}
+          </Scatter>
+          <Scatter name="Competitors" data={competitorBrands} shape={renderCompetitorShape(isCompact)}>
+            {competitorBrands.map((brand, index) => (
+              <Cell
+                key={`${brand.name}-${index}`}
+                fill="#1f4b8f"
+                stroke="#fbf6ee"
               />
             ))}
           </Scatter>

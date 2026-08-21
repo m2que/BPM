@@ -1,13 +1,26 @@
 import React from 'react';
 
-const LoadingIndicator: React.FC = () => {
+interface LoadingIndicatorProps {
+  elapsedSeconds: number;
+}
+
+const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({ elapsedSeconds }) => {
+  const minuteText = elapsedSeconds >= 60 ? `${Math.floor(elapsedSeconds / 60)}m ${elapsedSeconds % 60}s` : `${elapsedSeconds}s`;
+
   return (
-    <div className="section-card my-8 rounded-[8px] p-8 text-center">
-      <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-line bg-surface-strong">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-[rgba(31,75,143,0.16)] border-t-accent-strong border-r-accent"></div>
+    <div className="brand-card brand-state">
+      <div className="brand-spinner-shell">
+        <div className="brand-spinner"></div>
       </div>
-      <p className="mt-6 text-lg font-semibold text-ink">Analyzing brand position...</p>
-      <p className="mt-2 text-muted">Mapping customer perceptions and competitor territory across the selected axes...</p>
+      <p className="brand-heading" style={{ marginTop: '20px' }}>Analyzing brand position...</p>
+      <p className="brand-copy" style={{ marginTop: '8px' }}>Mapping customer perceptions, competitor territory, and market context...</p>
+      <p className="brand-copy-sm" style={{ marginTop: '8px' }}>Elapsed time: {minuteText}</p>
+      <p className="brand-copy-sm" style={{ marginTop: '6px' }}>Be patient - analysis is running and needs a minute or so.</p>
+      <div className="brand-status-dots" aria-hidden="true">
+        <div className="brand-status-dot"></div>
+        <div className="brand-status-dot"></div>
+        <div className="brand-status-dot"></div>
+      </div>
     </div>
   );
 };

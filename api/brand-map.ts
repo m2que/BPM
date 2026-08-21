@@ -96,6 +96,52 @@ const isReferenceCategory = (value: string): value is ReferenceCategory => VALID
 
 const clampScore = (value: number) => Math.max(-10, Math.min(10, value));
 
+const spreadAxisValues = (values: number[]) => {
+  if (values.length === 0) return values;
+
+  const uniqueSorted = Array.from(new Set(values.map((value) => Number(value.toFixed(3))))).sort((a, b) => a - b);
+
+  if (uniqueSorted.length === 1) {
+    return values.map(() => 0);
+  }
+
+  const rankMap = new Map<number, number>();
+  uniqueSorted.forEach((value, index) => {
+    const normalized = -8 + (index * 16) / (uniqueSorted.length - 1);
+    rankMap.set(value, normalized);
+  });
+
+  return values.map((value) => rankMap.get(Number(value.toFixed(3))) || 0);
+};
+
+const expandClusteredBrands = (brands: MapBrand[]) => {
+  if (brands.length <= 1) return brands;
+
+  const xValues = brands.map((brand) => brand.x);
+  const yValues = brands.map((brand) => brand.y);
+
+  const xMin = Math.min(...xValues);
+  const xMax = Math.max(...xValues);
+  const yMin = Math.min(...yValues);
+  const yMax = Math.max(...yValues);
+
+  const xRange = xMax - xMin;
+  const yRange = yMax - yMin;
+
+  if (xRange >= 8 && yRange >= 8) {
+    return brands;
+  }
+
+  const spreadX = spreadAxisValues(xValues);
+  const spreadY = spreadAxisValues(yValues);
+
+  return brands.map((brand, index) => ({
+    ...brand,
+    x: clampScore(xRange < 8 ? spreadX[index] : brand.x),
+    y: clampScore(yRange < 8 ? spreadY[index] : brand.y)
+  }));
+};
+
 const normalizeCategory = (category: string): ReferenceCategory => {
   const cleaned = category.toLowerCase().trim();
 
@@ -660,6 +706,8 @@ const parseBrandMapResponse = (jsonText: string, verifiedSources: Map<string, st
     normalizedBrands = flipped.brands;
     xAxis = flipped.axis;
   }
+
+  normalizedBrands = expandClusteredBrands(normalizedBrands);
 
   const axisDefinitions = {
     x: xAxis,

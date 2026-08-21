@@ -1,14 +1,15 @@
 import React from 'react';
+import BrandIcon from './BrandIcon';
 import PerceptualMap from './PerceptualMap';
 import SourceList from './SourceList';
-import { ChartBarIcon } from './icons';
 import type { MapData } from '../types';
 
 interface DashboardDisplayProps {
   data: MapData;
+  onRunNewAnalysis: () => void;
 }
 
-const DashboardDisplay: React.FC<DashboardDisplayProps> = ({ data }) => {
+const DashboardDisplay: React.FC<DashboardDisplayProps> = ({ data, onRunNewAnalysis }) => {
   const targetBrand = data.brands.find((brand) => brand.isTarget);
   const competitors = data.brands.filter((brand) => !brand.isTarget);
   const positioningSummary = data.positioningSummary?.trim() || 'The map places the target brand on two customer perception dimensions to show how it is being seen in relation to competitors in the selected scope.';
@@ -18,16 +19,34 @@ const DashboardDisplay: React.FC<DashboardDisplayProps> = ({ data }) => {
   const yAxisDisplayLabel = data.yAxisLabel;
   const xAxisExplanation = data.axisDefinitions?.x.explanation || '';
   const yAxisExplanation = data.axisDefinitions?.y.explanation || '';
+  const quantitative = data.marketOverview?.quantitativeSizing;
+  const qualitative = data.marketOverview?.qualitativeTrends;
+  const competitiveLandscape = data.marketOverview?.competitiveLandscape;
+  const hasMarketOverview = Boolean(data.marketOverview);
+  const marketOverviewReferences = [
+    ...(quantitative?.sources || []).map((source) => ({
+      title: source.title,
+      url: source.url,
+      label: source.categoryLabel || source.sourceType,
+      note: source.evidenceUsed
+    })),
+    ...(qualitative?.sources || []).map((source) => ({
+      title: source.title,
+      url: source.url,
+      label: source.categoryLabel || source.sourceType,
+      note: source.evidenceUsed
+    }))
+  ].filter((source, index, all) => all.findIndex((item) => item.url === source.url) === index);
 
 
   return (
     <div className="animate-fade-in space-y-6 sm:space-y-8">
       <section className="section-card rounded-[8px] p-4 sm:p-5">
-        <div className="mb-3 flex items-center gap-3">
-          <div className="tool-card-icon h-11 w-11 w-[44px] border-line bg-surface-strong text-accent-strong">
-            <ChartBarIcon className="h-5 w-5" />
+        <div className="brand-section-title">
+          <div className="brand-icon-circle" aria-hidden="true" style={{ flexShrink: 0 }}>
+            <BrandIcon name="icon-bpm" style={{ width: '28px', height: '28px' }} />
           </div>
-          <h2 className="font-display text-3xl font-semibold text-ink">
+          <h2 className="brand-heading" style={{ fontSize: 'clamp(2rem, 3vw, 2.5rem)' }}>
             Perception Map for <span className="text-accent-strong">{targetBrand?.name}</span>
           </h2>
         </div>
@@ -103,16 +122,143 @@ const DashboardDisplay: React.FC<DashboardDisplayProps> = ({ data }) => {
 
       <section className="grid gap-4 sm:gap-6 lg:grid-cols-2">
         <div className="section-card rounded-[8px] p-4 sm:p-6">
-          <h3 className="font-display text-2xl font-semibold text-ink">Positioning Interpretation</h3>
+          <div className="brand-section-title">
+            <div className="brand-icon-circle" aria-hidden="true" style={{ flexShrink: 0 }}>
+              <BrandIcon name="icon-bpm" style={{ width: '24px', height: '24px' }} />
+            </div>
+            <h3 className="brand-heading">Positioning Interpretation</h3>
+          </div>
           <p className="mt-4 whitespace-pre-line text-sm leading-7 text-muted sm:text-base">{positioningSummary}</p>
         </div>
         <div className="section-card rounded-[8px] p-4 sm:p-6">
-          <h3 className="font-display text-2xl font-semibold text-ink">Competitive Strategy</h3>
+          <div className="brand-section-title">
+            <div className="brand-icon-circle" aria-hidden="true" style={{ flexShrink: 0 }}>
+              <BrandIcon name="icon-bpm" style={{ width: '24px', height: '24px' }} />
+            </div>
+            <h3 className="brand-heading">Competitive Strategy</h3>
+          </div>
           <p className="mt-4 whitespace-pre-line text-sm leading-7 text-muted sm:text-base">{competitiveInterpretation}</p>
         </div>
       </section>
 
-      <SourceList references={data.references} />
+      {hasMarketOverview && (
+        <section className="section-card rounded-[8px] p-4 sm:p-6">
+          <div className="brand-section-title">
+            <div className="brand-icon-circle" aria-hidden="true" style={{ flexShrink: 0 }}>
+              <BrandIcon name="icon-bpm" style={{ width: '24px', height: '24px' }} />
+            </div>
+            <h3 className="brand-heading">Market Overview</h3>
+          </div>
+          <div className="mt-5 space-y-5">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent-strong">Market Category</p>
+              <p className="mt-2 text-base leading-7 text-muted">{data.marketOverview?.marketCategory}</p>
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-2">
+              <div className="rounded-[8px] border border-line bg-surface-strong p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Market Size</p>
+                <p className="mt-3 text-sm leading-7 text-muted">{quantitative?.sourceUnavailable ? 'No market-size source was found for this query.' : quantitative?.summary}</p>
+                {quantitative?.marketSize && <p className="mt-3 text-sm text-ink"><strong>Market size:</strong> {quantitative.marketSize}</p>}
+                {quantitative?.cagr && <p className="mt-2 text-sm text-ink"><strong>CAGR:</strong> {quantitative.cagr}</p>}
+                {quantitative?.forecastPeriod && <p className="mt-2 text-sm text-ink"><strong>Forecast period:</strong> {quantitative.forecastPeriod}</p>}
+                {quantitative?.keySegments?.length ? (
+                  <div className="mt-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent-strong">Market Segments</p>
+                    <ul className="mt-2 space-y-2">
+                      {quantitative.keySegments.map((segment) => (
+                        <li key={segment} className="text-sm text-muted">{segment}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+                {quantitative?.regionalNotes?.length ? (
+                  <div className="mt-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent-strong">Regional Notes</p>
+                    <ul className="mt-2 space-y-2">
+                      {quantitative.regionalNotes.map((note) => (
+                        <li key={note} className="text-sm text-muted">{note}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+              </div>
+
+              <div className="rounded-[8px] border border-line bg-surface-strong p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Trends</p>
+                <p className="mt-3 text-sm leading-7 text-muted">{qualitative?.sourceUnavailable ? 'No Deloitte, PwC, EY, or KPMG trend source was found for this query.' : qualitative?.summary}</p>
+                {([...(qualitative?.macroTrends || []), ...(qualitative?.consumerBehaviorInsights || []), ...(qualitative?.strategicImplications || [])].length > 0) ? (
+                  <div className="mt-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent-strong">Highlights</p>
+                    <ul className="mt-2 space-y-2">
+                      {[...(qualitative?.macroTrends || []), ...(qualitative?.consumerBehaviorInsights || []), ...(qualitative?.strategicImplications || [])].slice(0, 6).map((item) => (
+                        <li key={item} className="text-sm text-muted">{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+
+            <div className="rounded-[8px] border border-line bg-paper p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Competitive Landscape</p>
+              <p className="mt-3 text-sm leading-7 text-muted">{competitiveLandscape?.summary}</p>
+              <div className="mt-4 grid gap-4 lg:grid-cols-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent-strong">Competitor Groups</p>
+                  <ul className="mt-2 space-y-2">
+                    {(competitiveLandscape?.keyCompetitorGroups || []).map((item) => (
+                      <li key={item} className="text-sm text-muted">{item}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent-strong">Positioning Pressure</p>
+                  <ul className="mt-2 space-y-2">
+                    {(competitiveLandscape?.positioningPressure || []).map((item) => (
+                      <li key={item} className="text-sm text-muted">{item}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent-strong">Whitespace Opportunities</p>
+                  <ul className="mt-2 space-y-2">
+                    {(competitiveLandscape?.whitespaceOpportunities || []).map((item) => (
+                      <li key={item} className="text-sm text-muted">{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {data.marketOverview?.limitations.filter((item) => !/unavailable from the required source set/i.test(item)).length ? (
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent-strong">Limitations</p>
+                <ul className="mt-2 space-y-2">
+                  {data.marketOverview.limitations.filter((item) => !/unavailable from the required source set/i.test(item)).map((item) => (
+                    <li key={item} className="text-sm text-muted">{item}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+
+          </div>
+        </section>
+      )}
+
+      <SourceList references={data.references} marketOverviewReferences={marketOverviewReferences} />
+
+      <div className="text-center">
+        <button
+          type="button"
+          className="brand-button brand-button-light"
+          style={{ background: '#e6d3b0', color: '#0d1c34', border: '1px solid #d4b27a' }}
+          onClick={onRunNewAnalysis}
+        >
+          <BrandIcon name="icon-marketlearn" className="brand-inline-icon h-5 w-5" />
+          Run New Analysis
+        </button>
+      </div>
     </div>
   );
 };
