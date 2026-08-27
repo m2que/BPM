@@ -13,6 +13,18 @@ import {
 } from 'recharts';
 import type { Brand } from '../types';
 
+const CHART_COLORS = {
+  grid: '#e2e8f0',
+  axis: '#475569',
+  cursor: '#4f46e5',
+  reference: '#4f46e5',
+  targetFill: '#f59e0b',
+  targetInner: '#eef2ff',
+  targetStroke: '#0f172a',
+  competitorFills: ['#0d9488', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444'],
+  competitorStroke: '#ffffff'
+} as const;
+
 interface PerceptualMapProps {
   data: Brand[];
   xAxisLabel: string;
@@ -39,11 +51,11 @@ const renderTargetShape = (isCompact: boolean) => (props: any) => {
   const { cx, cy, fill, stroke } = props;
 
   return (
-    <g>
-      <circle cx={cx} cy={cy} r={isCompact ? 18 : 24} fill={fill} stroke={stroke} strokeWidth={2.5} />
-      <circle cx={cx} cy={cy} r={isCompact ? 8 : 10} fill="#fffaf2" opacity={0.9} />
-    </g>
-  );
+      <g>
+        <circle cx={cx} cy={cy} r={isCompact ? 18 : 24} fill={fill} stroke={stroke} strokeWidth={2.5} />
+        <circle cx={cx} cy={cy} r={isCompact ? 8 : 10} fill={CHART_COLORS.targetInner} opacity={0.92} />
+      </g>
+    );
 };
 
 const renderCompetitorShape = (isCompact: boolean) => (props: any) => {
@@ -63,22 +75,22 @@ const PerceptualMap: React.FC<PerceptualMapProps> = ({ data, xAxisLabel, yAxisLa
     <div className="h-[22rem] rounded-[8px] border border-line bg-paper p-3 sm:h-96 sm:p-4 md:h-[520px]">
       <ResponsiveContainer width="100%" height="100%">
         <ScatterChart margin={{ top: 16, right: isCompact ? 10 : 24, bottom: isCompact ? 72 : 56, left: isCompact ? 18 : 42 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#d6d2cb" />
-          <XAxis type="number" dataKey="x" domain={[-10, 10]} ticks={[-10, -5, 0, 5, 10]} stroke="#5f6b7a" tick={{ fontSize: isCompact ? 11 : 12, fill: '#5f6b7a' }}>
-            <Label value={chartXAxisLabel} offset={isCompact ? -8 : -18} position="insideBottom" fill="#5f6b7a" style={{ fontSize: isCompact ? '11px' : '12px' }} />
+          <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
+          <XAxis type="number" dataKey="x" domain={[-10, 10]} ticks={[-10, -5, 0, 5, 10]} stroke={CHART_COLORS.axis} tick={{ fontSize: isCompact ? 11 : 12, fill: CHART_COLORS.axis }}>
+            <Label value={chartXAxisLabel} offset={isCompact ? -8 : -18} position="insideBottom" fill={CHART_COLORS.axis} style={{ fontSize: isCompact ? '11px' : '12px' }} />
           </XAxis>
-          <YAxis type="number" dataKey="y" domain={[-10, 10]} ticks={[-10, -5, 0, 5, 10]} stroke="#5f6b7a" tick={{ fontSize: isCompact ? 11 : 12, fill: '#5f6b7a' }} width={isCompact ? 30 : 40}>
-            <Label value={chartYAxisLabel} angle={-90} offset={isCompact ? -4 : -20} position="insideLeft" fill="#5f6b7a" style={{ textAnchor: 'middle', fontSize: isCompact ? '11px' : '12px' }} />
+          <YAxis type="number" dataKey="y" domain={[-10, 10]} ticks={[-10, -5, 0, 5, 10]} stroke={CHART_COLORS.axis} tick={{ fontSize: isCompact ? 11 : 12, fill: CHART_COLORS.axis }} width={isCompact ? 30 : 40}>
+            <Label value={chartYAxisLabel} angle={-90} offset={isCompact ? -4 : -20} position="insideLeft" fill={CHART_COLORS.axis} style={{ textAnchor: 'middle', fontSize: isCompact ? '11px' : '12px' }} />
           </YAxis>
-          <Tooltip content={<CustomTooltip />} cursor={{ strokeDasharray: '3 3', stroke: '#c39a5b' }} />
-          <ReferenceLine x={0} stroke="#c39a5b" strokeDasharray="4 4" />
-          <ReferenceLine y={0} stroke="#c39a5b" strokeDasharray="4 4" />
+          <Tooltip content={<CustomTooltip />} cursor={{ strokeDasharray: '3 3', stroke: CHART_COLORS.cursor }} />
+          <ReferenceLine x={0} stroke={CHART_COLORS.reference} strokeWidth={2.5} strokeDasharray="4 4" />
+          <ReferenceLine y={0} stroke={CHART_COLORS.reference} strokeWidth={2.5} strokeDasharray="4 4" />
           <Scatter name="Target Brand" data={targetBrands} shape={renderTargetShape(isCompact)}>
             {targetBrands.map((brand, index) => (
               <Cell
                 key={`${brand.name}-${index}`}
-                fill="#c39a5b"
-                stroke="#1d2430"
+                fill={CHART_COLORS.targetFill}
+                stroke={CHART_COLORS.targetStroke}
               />
             ))}
           </Scatter>
@@ -86,8 +98,8 @@ const PerceptualMap: React.FC<PerceptualMapProps> = ({ data, xAxisLabel, yAxisLa
             {competitorBrands.map((brand, index) => (
               <Cell
                 key={`${brand.name}-${index}`}
-                fill="#1f4b8f"
-                stroke="#fbf6ee"
+                fill={CHART_COLORS.competitorFills[index % CHART_COLORS.competitorFills.length]}
+                stroke={CHART_COLORS.competitorStroke}
               />
             ))}
           </Scatter>
