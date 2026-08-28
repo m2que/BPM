@@ -4,12 +4,37 @@ import PerceptualMap from './PerceptualMap';
 import SourceList from './SourceList';
 import type { MapData } from '../types';
 
+const renderFormattedText = (value: string) => {
+  const parts = value.split(/(\*\*[^*]+\*\*)/g).filter(Boolean);
+
+  return parts.map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={`${part}-${index}`}>{part.slice(2, -2)}</strong>;
+    }
+
+    const lines = part.split('\n');
+    return (
+      <React.Fragment key={`${part}-${index}`}>
+        {lines.map((line, lineIndex) => (
+          <React.Fragment key={`${line}-${lineIndex}`}>
+            {line}
+            {lineIndex < lines.length - 1 ? <br /> : null}
+          </React.Fragment>
+        ))}
+      </React.Fragment>
+    );
+  });
+};
+
 interface DashboardDisplayProps {
   data: MapData;
   onRunNewAnalysis: () => void;
 }
 
-const DashboardDisplay: React.FC<DashboardDisplayProps> = ({ data, onRunNewAnalysis }) => {
+const DashboardDisplay: React.FC<DashboardDisplayProps> = ({
+  data,
+  onRunNewAnalysis
+}) => {
   const targetBrand = data.brands.find((brand) => brand.isTarget);
   const competitors = data.brands.filter((brand) => !brand.isTarget);
   const positioningSummary = data.positioningSummary?.trim() || 'The map places the target brand on two customer perception dimensions to show how it is being seen in relation to competitors in the selected scope.';
@@ -121,23 +146,23 @@ const DashboardDisplay: React.FC<DashboardDisplayProps> = ({ data, onRunNewAnaly
       </section>
 
       <section className="grid gap-4 sm:gap-6 lg:grid-cols-2">
-        <div className="section-card rounded-[8px] p-4 sm:p-6">
+        <div className="section-card section-card-stripe-teal rounded-[8px] p-4 sm:p-6">
           <div className="brand-section-title">
             <div className="brand-icon-circle" aria-hidden="true" style={{ flexShrink: 0 }}>
               <BrandIcon name="icon-bpm" style={{ width: '24px', height: '24px' }} />
             </div>
             <h3 className="brand-heading">Positioning Interpretation</h3>
           </div>
-          <p className="mt-4 whitespace-pre-line text-sm leading-7 text-muted sm:text-base">{positioningSummary}</p>
+          <p className="mt-4 whitespace-pre-line text-sm leading-7 text-muted sm:text-base">{renderFormattedText(positioningSummary)}</p>
         </div>
-        <div className="section-card rounded-[8px] p-4 sm:p-6">
+        <div className="section-card section-card-stripe-emerald rounded-[8px] p-4 sm:p-6">
           <div className="brand-section-title">
             <div className="brand-icon-circle" aria-hidden="true" style={{ flexShrink: 0 }}>
               <BrandIcon name="icon-bpm" style={{ width: '24px', height: '24px' }} />
             </div>
             <h3 className="brand-heading">Competitive Strategy</h3>
           </div>
-          <p className="mt-4 whitespace-pre-line text-sm leading-7 text-muted sm:text-base">{competitiveInterpretation}</p>
+          <p className="mt-4 whitespace-pre-line text-sm leading-7 text-muted sm:text-base">{renderFormattedText(competitiveInterpretation)}</p>
         </div>
       </section>
 
@@ -252,7 +277,6 @@ const DashboardDisplay: React.FC<DashboardDisplayProps> = ({ data, onRunNewAnaly
         <button
           type="button"
           className="brand-button brand-button-light"
-          style={{ background: '#e6d3b0', color: '#0d1c34', border: '1px solid #d4b27a' }}
           onClick={onRunNewAnalysis}
         >
           <BrandIcon name="icon-marketlearn" className="brand-inline-icon h-5 w-5" />

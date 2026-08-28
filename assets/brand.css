@@ -702,6 +702,14 @@ h3,
   background: var(--brand-stripe);
 }
 
+.section-card-stripe-teal::before {
+  background: var(--accent-2);
+}
+
+.section-card-stripe-emerald::before {
+  background: var(--accent-3);
+}
+
 .section-copy,
 .tool-copy,
 .workflow-copy,
