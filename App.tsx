@@ -124,7 +124,10 @@ const App: React.FC = () => {
           {error && <ErrorDisplay message={error} />}
 
           {mapData ? (
-            <DashboardDisplay data={mapData} onRunNewAnalysis={handleRunNewAnalysis} />
+            <DashboardDisplay
+              data={mapData}
+              onRunNewAnalysis={handleRunNewAnalysis}
+            />
           ) : (
             !isLoading && !error && (
               <div className="brand-card brand-state">
@@ -141,11 +144,19 @@ const App: React.FC = () => {
         </main>
 
         <footer className="brand-footer">
+          <a
+            className="brand-footer-button"
+            href="https://forms.cloud.microsoft/r/BdSpx03G9i"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Share feedback
+          </a>
           <p className="brand-footer-copy">
             © 2026 <a href="https://marketlearn.online" className="brand-inline-link">MarketLearn</a>. AI-assisted content — verify before implementation.
           </p>
           <p className="brand-footer-copy">
-            Contact: <a href="mailto:marketlearn.online@gmail.com" className="brand-inline-link">marketlearn.online@gmail.com</a>
+            <a href="mailto:marketlearn.online@gmail.com" className="brand-inline-link">Email us</a>
           </p>
         </footer>
       </div>

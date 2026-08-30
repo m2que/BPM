@@ -21,9 +21,11 @@ const CHART_COLORS = {
   targetFill: '#f59e0b',
   targetInner: '#eef2ff',
   targetStroke: '#0f172a',
-  competitorFills: ['#0d9488', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444'],
+  competitorFills: ['#0d9488', '#10b981', '#8b5cf6', '#ef4444', '#334155'],
   competitorStroke: '#ffffff'
 } as const;
+
+const formatMapValue = (value: number) => Math.round(value);
 
 interface PerceptualMapProps {
   data: Brand[];
@@ -41,8 +43,8 @@ const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<
   return (
     <div className="rounded-[8px] border border-line bg-paper p-3 text-sm">
       <p className="font-semibold text-ink">{brand.name}</p>
-      <p className="text-muted">X: {brand.x}</p>
-      <p className="text-muted">Y: {brand.y}</p>
+      <p className="text-muted">X: {formatMapValue(brand.x)}</p>
+      <p className="text-muted">Y: {formatMapValue(brand.y)}</p>
     </div>
   );
 };
@@ -70,11 +72,17 @@ const PerceptualMap: React.FC<PerceptualMapProps> = ({ data, xAxisLabel, yAxisLa
   const chartYAxisLabel = `Perception Dimension: ${yAxisLabel}`;
   const targetBrands = data.filter((brand) => brand.isTarget);
   const competitorBrands = data.filter((brand) => !brand.isTarget);
+  const chartBounds = {
+    left: isCompact ? 18 : 42,
+    right: isCompact ? 10 : 24,
+    top: 16,
+    bottom: isCompact ? 72 : 56
+  };
 
   return (
     <div className="h-[22rem] rounded-[8px] border border-line bg-paper p-3 sm:h-96 sm:p-4 md:h-[520px]">
       <ResponsiveContainer width="100%" height="100%">
-        <ScatterChart margin={{ top: 16, right: isCompact ? 10 : 24, bottom: isCompact ? 72 : 56, left: isCompact ? 18 : 42 }}>
+        <ScatterChart margin={{ top: chartBounds.top, right: chartBounds.right, bottom: chartBounds.bottom, left: chartBounds.left }}>
           <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
           <XAxis type="number" dataKey="x" domain={[-10, 10]} ticks={[-10, -5, 0, 5, 10]} stroke={CHART_COLORS.axis} tick={{ fontSize: isCompact ? 11 : 12, fill: CHART_COLORS.axis }}>
             <Label value={chartXAxisLabel} offset={isCompact ? -8 : -18} position="insideBottom" fill={CHART_COLORS.axis} style={{ fontSize: isCompact ? '11px' : '12px' }} />
