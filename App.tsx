@@ -6,6 +6,7 @@ import ErrorDisplay from './components/ErrorDisplay';
 import LoadingIndicator from './components/LoadingIndicator';
 import { fetchBrandMapData, fetchMarketOverview } from './services/geminiService';
 import type { MapData, ScopeOption } from './types';
+import { track } from './lib/analytics';
 
 const App: React.FC = () => {
   const [mapData, setMapData] = useState<MapData | null>(null);
@@ -56,6 +57,7 @@ const App: React.FC = () => {
     setIsLoading(true);
     setError(null);
     setMapData(null);
+    track('analyze_click', { app_name: 'bpm' });
 
     try {
       const analysisScope = scope === 'Regional' ? regionalQuery.trim() : 'Global';
@@ -68,6 +70,7 @@ const App: React.FC = () => {
         ...data,
         marketOverview: marketOverview || data.marketOverview
       });
+      track('analyze_success', { app_name: 'bpm' });
     } catch (requestError) {
       console.error(requestError);
       setError(requestError instanceof Error ? requestError.message : 'An unknown error occurred.');
